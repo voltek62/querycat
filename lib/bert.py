@@ -6,32 +6,36 @@ from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 import umap
 import transformers
-from transformers import BertTokenizer, BertModel, DistilBertTokenizer, DistilBertModel
+#from transformers import BertTokenizer, BertModel, DistilBertTokenizer, DistilBertModel, CamembertModel, CamembertTokenizer
+from transformers import AutoModel, AutoModelWithLMHead, AutoTokenizer
 import random
 import matplotlib.pyplot as plt
 
-from querycat import config
-
-random.seed(config.RANDOM_SEED)
-np.random.seed(config.RANDOM_SEED)
-torch.manual_seed(config.RANDOM_SEED)
+#from querycat import config
 
 class BERTSim:
 
-    def __init__(self, dims = None):
+    def __init__(self, transformer_model, random_seed):
+        
+        random.seed(random_seed)
+        np.random.seed(random_seed)
+        torch.manual_seed(random_seed)        
 
-        if 'distilbert' in config.TRANSFORMER_MODEL:
-            self.model      = DistilBertModel.from_pretrained(config.TRANSFORMER_MODEL)
-            self.tokenizer  = DistilBertTokenizer.from_pretrained(config.TRANSFORMER_MODEL)
-        else:
-            self.model      = BertModel.from_pretrained(config.TRANSFORMER_MODEL)
-            self.tokenizer  = BertTokenizer.from_pretrained(config.TRANSFORMER_MODEL)
-
+        #if 'distilbert' in config.TRANSFORMER_MODEL:
+        #    self.model      = DistilBertModel.from_pretrained(config.TRANSFORMER_MODEL)
+        #    self.tokenizer  = DistilBertTokenizer.from_pretrained(config.TRANSFORMER_MODEL)
+        #else:
+        #    self.model      = BertModel.from_pretrained(transformer_model)
+        #    self.tokenizer  = BertTokenizer.from_pretrained(transformer_model)        
+        
+        self.random_seed = random_seed
+        self.model = AutoModelWithLMHead.from_pretrained(transformer_model)
+        self.tokenizer = AutoTokenizer.from_pretrained(transformer_model)
         self.terms          = []
         self.embeddings     = torch.FloatTensor([])
         self.embeddings_2d  = None
         self.diffs          = []
-        self.embed          = nn.Linear(self.model.config.dim, dims) if dims else None
+        self.embed          = None        
         self.sim_fn         = torch.nn.CosineSimilarity(dim=1)
 
 
@@ -80,14 +84,14 @@ class BERTSim:
 
 
     def convert_tsne(self):
-        tsne_model = TSNE(perplexity=60, n_components=2, n_iter=2000, random_state=config.RANDOM_SEED)
+        tsne_model = TSNE(perplexity=60, n_components=2, n_iter=2000, random_state=self.random_seed)
         self.embeddings_2d = tsne_model.fit_transform(self.embeddings)
 
     def convert_pca(self):
         self.embeddings_2d = PCA(n_components=2).fit_transform(self.embeddings)
 
     def convert_umap(self):
-        self.embeddings_2d = umap.UMAP(n_neighbors=30, min_dist=0.0, n_components=2, random_state=config.RANDOM_SEED).fit_transform(self.embeddings)
+        self.embeddings_2d = umap.UMAP(n_neighbors=30, min_dist=0.0, n_components=2, random_state=self.random_seed).fit_transform(self.embeddings)
 
 
     def diff_plot(self, reduction='tsne'):

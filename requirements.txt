@@ -1,7 +1,6 @@
-torch==1.4.0+cpu -f https://download.pytorch.org/whl/torch_stable.html
+torch
 transformers
 scikit-learn
 umap-learn
 spacy>=2.2.0,<2.3.0
 pyfpgrowth
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.0/en_core_web_sm-2.2.0.tar.gz#egg=en_core_web_sm==2.2.0

@@ -1,4 +1,5 @@
 import pandas as pd
+from .lib.normalization import init_lib
 from .lib.categorize import Categorize
 from .lib.bert import BERTSim
 

@@ -13,16 +13,46 @@ from nltk.stem import WordNetLemmatizer
 from html.parser import HTMLParser
 import unicodedata
 from tqdm.auto import tqdm
+from nltk.corpus import wordnet as wn
 
-nltk.download('stopwords')
-nltk.download('wordnet')
-nltk.download('punkt')
+# ["english", "german", "french", "spanish", "portuguese", "italian", "dutch"]
 
-stopword_list = nltk.corpus.stopwords.words('english')
+import fr_core_news_sm
+nlp_fr = fr_core_news_sm.load()
+
+import en_core_web_sm
+nlp_en = en_core_web_sm.load()
+
+import de_core_news_sm
+nlp_de = de_core_news_sm.load()
+
+import es_core_news_sm
+nlp_es = es_core_news_sm.load()
+
+import it_core_news_sm
+nlp_it = it_core_news_sm.load()
+
+import pt_core_news_sm
+nlp_pt = pt_core_news_sm.load()
+
+import nl_core_news_sm
+nlp_nl = nl_core_news_sm.load()
+
 
 wnl = WordNetLemmatizer()
 html_parser = HTMLParser()
 
+stopword_list = []
+language = ""    
+
+def init_lib(lang):    
+    nltk.download('stopwords')
+    nltk.download('wordnet')
+    nltk.download('punkt')
+    language = lang
+    print("Load "+lang+" language....")
+    stopword_list = nltk.corpus.stopwords.words(lang)
+        
 def tokenize_text(text):
     tokens = nltk.word_tokenize(text)
     tokens = [token.strip() for token in tokens]
@@ -45,11 +75,6 @@ def expand_contractions(text, contraction_mapping):
     expanded_text = re.sub("'", "", expanded_text)
     return expanded_text
 
-
-from nltk.corpus import wordnet as wn
-import en_core_web_sm
-nlp = en_core_web_sm.load()
-
 # Annotate text tokens with POS tags
 def pos_tag_text(text):
 
@@ -65,7 +90,24 @@ def pos_tag_text(text):
         else:
             return None
 
+    # ["english", "german", "french", "spanish", "portuguese", "italian", "dutch"]
+    if (language=="french"):
+        nlp = nlp_fr
+    elif (language=="italian"):
+        nlp = nlp_it
+    elif (language=="spanish"):
+        nlp = nlp_sp
+    elif (language=="dutch"):
+        nlp = nlp_nl
+    elif (language=="german"):
+        nlp = nlp_de             
+    elif (language=="portuguese"):
+        nlp = nlp_de        
+    else:
+        nlp = nlp_en
+        
     tagged_text = nlp(text)
+    
     tagged_lower_text = [(str(word).lower(), penn_to_wn_tags(word.pos_))
                          for word in
                          tagged_text]
@@ -121,8 +163,7 @@ def normalize_corpus(corpus, lemmatize=True,
                      tokenize=False, sort_text=False):
 
     normalized_corpus = []
-
-
+    
     for text in corpus:
         text = html_parser.unescape(text)
         text = expand_contractions(text, CONTRACTION_MAP)

@@ -6,11 +6,9 @@ from collections import Counter
 import json
 
 from .normalization import normalize_corpus, tokenize_text
+
 from .apriori import apriori
 import pyfpgrowth as pg
-
-
-
 
 class Categorize:
 
@@ -23,7 +21,6 @@ class Categorize:
         self.alg = alg
         self.data = data
         self.categorize_queries(**data)
-
 
     @staticmethod
     def match_labels(x, labels):
