@@ -126,7 +126,6 @@ def lemmatize_text(text):
 
 
 def remove_special_characters(text):
-    print("remove_special_characters")
     tokens = tokenize_text(text)
     pattern = re.compile('[{}]'.format(re.escape(string.punctuation)))
     filtered_tokens = filter(None, [pattern.sub(' ', token) for token in tokens])
