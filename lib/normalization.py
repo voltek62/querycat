@@ -16,8 +16,6 @@ import unicodedata
 from tqdm.auto import tqdm
 from nltk.corpus import wordnet as wn
 
-# ["english", "german", "french", "spanish", "portuguese", "italian", "dutch"]
-
 import fr_core_news_sm
 nlp_fr = fr_core_news_sm.load()
 
@@ -39,14 +37,15 @@ nlp_pt = pt_core_news_sm.load()
 import nl_core_news_sm
 nlp_nl = nl_core_news_sm.load()
 
-
+# global variables
 wnl = WordNetLemmatizer()
 html_parser = HTMLParser()
-
 stopword_list = []
 language = ""    
 
 def init_lib(lang):    
+    global stopword_list, language
+    
     nltk.download('stopwords')
     nltk.download('wordnet')
     nltk.download('punkt')
@@ -78,6 +77,7 @@ def expand_contractions(text, contraction_mapping):
 
 # Annotate text tokens with POS tags
 def pos_tag_text(text):
+    global language
 
     def penn_to_wn_tags(pos_tag):
         if pos_tag.startswith('ADJ'):
@@ -116,7 +116,7 @@ def pos_tag_text(text):
 
 # lemmatize text based on POS tags
 def lemmatize_text(text):
-
+    global wnl
     pos_tagged_text = pos_tag_text(text)
     lemmatized_tokens = [wnl.lemmatize(word, pos_tag) if pos_tag
                          else word
@@ -137,6 +137,8 @@ def remove_special_characters(text):
 
 
 def remove_stopwords(text):
+    global stopword_list
+    
     tokens = tokenize_text(text)
     filtered_tokens = [token for token in tokens if token not in stopword_list]
     filtered_text = ' '.join(filtered_tokens)
@@ -165,6 +167,7 @@ def unescape_html(parser, text):
 def normalize_corpus(corpus, lemmatize=True,
                      only_text_chars=False,
                      tokenize=False, sort_text=False):
+    global html_parser
 
     normalized_corpus = []
     
