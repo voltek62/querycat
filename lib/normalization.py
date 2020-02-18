@@ -9,6 +9,7 @@ from .contractions import CONTRACTION_MAP
 import re
 import nltk
 import string
+import unidecode
 from nltk.stem import WordNetLemmatizer
 from html.parser import HTMLParser
 import unicodedata
@@ -125,10 +126,13 @@ def lemmatize_text(text):
 
 
 def remove_special_characters(text):
+    print("remove_special_characters")
     tokens = tokenize_text(text)
     pattern = re.compile('[{}]'.format(re.escape(string.punctuation)))
     filtered_tokens = filter(None, [pattern.sub(' ', token) for token in tokens])
     filtered_text = ' '.join(filtered_tokens)
+    # remove accent
+    filtered_text = unidecode.unidecode(filtered_text)
     return filtered_text
 
 
@@ -171,8 +175,8 @@ def normalize_corpus(corpus, lemmatize=True,
             text = lemmatize_text(text)
         else:
             text = text.lower()
+        text = remove_stopwords(text)    
         text = remove_special_characters(text)
-        text = remove_stopwords(text)
         if sort_text:
             text = sort_terms(text)
         if only_text_chars:
