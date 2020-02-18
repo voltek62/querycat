@@ -6,12 +6,9 @@ from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
 import umap
 import transformers
-#from transformers import BertTokenizer, BertModel, DistilBertTokenizer, DistilBertModel, CamembertModel, CamembertTokenizer
 from transformers import AutoModel, AutoModelWithLMHead, AutoTokenizer
 import random
 import matplotlib.pyplot as plt
-
-#from querycat import config
 
 class BERTSim:
 
@@ -21,13 +18,6 @@ class BERTSim:
         np.random.seed(random_seed)
         torch.manual_seed(random_seed)        
 
-        #if 'distilbert' in config.TRANSFORMER_MODEL:
-        #    self.model      = DistilBertModel.from_pretrained(config.TRANSFORMER_MODEL)
-        #    self.tokenizer  = DistilBertTokenizer.from_pretrained(config.TRANSFORMER_MODEL)
-        #else:
-        #    self.model      = BertModel.from_pretrained(transformer_model)
-        #    self.tokenizer  = BertTokenizer.from_pretrained(transformer_model)        
-        
         self.random_seed = random_seed
         self.model = AutoModelWithLMHead.from_pretrained(transformer_model)
         self.tokenizer = AutoTokenizer.from_pretrained(transformer_model)
@@ -104,7 +94,6 @@ class BERTSim:
             self.convert_umap()
         else:
             raise Exception("`reduction` must be `tsne`,`pca`, or `umap`.")
-
 
         x_coords = []
         y_coords = []
