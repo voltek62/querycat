@@ -97,7 +97,7 @@ def pos_tag_text(text):
     elif (language=="italian"):
         nlp = nlp_it
     elif (language=="spanish"):
-        nlp = nlp_sp
+        nlp = nlp_es
     elif (language=="dutch"):
         nlp = nlp_nl
     elif (language=="german"):
